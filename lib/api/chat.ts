@@ -66,3 +66,29 @@ export async function subscribeToChatMessages(dashboardId: string, callback: (pa
 
   return channel
 }
+
+export async function getLatestMessageForDashboards(dashboardIds: string[]) {
+  if (!dashboardIds.length) return {}
+  
+  const supabase = createClient()
+  
+  // Get the latest message for each dashboard
+  const { data, error } = await supabase
+    .from('chat_messages')
+    .select('dashboard_id, created_at')
+    .in('dashboard_id', dashboardIds)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  
+  // Group by dashboard_id and get the latest
+  const latestByDashboard: Record<string, string> = {}
+  for (const msg of data || []) {
+    if (!latestByDashboard[msg.dashboard_id]) {
+      latestByDashboard[msg.dashboard_id] = msg.created_at
+    }
+  }
+  
+  return latestByDashboard
+}

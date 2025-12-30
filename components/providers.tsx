@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState, type ReactNode } from 'react'
 import { AuthProvider } from '@/components/auth/auth-provider'
+import { ThemeProvider } from '@/components/theme-provider'
 
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
@@ -10,10 +11,11 @@ export function Providers({ children }: { children: ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 0, // Always fetch fresh data
-            gcTime: 0, // Don't cache results (was cacheTime in v4)
-            refetchOnWindowFocus: true, // Refetch when window regains focus
-            refetchOnMount: true, // Refetch when component mounts
+            staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+            gcTime: 10 * 60 * 1000, // Cache for 10 minutes
+            refetchOnWindowFocus: false, // Don't refetch on window focus
+            refetchOnMount: false, // Don't refetch on component mount
+            retry: 1, // Only retry once on failure
           },
         },
       })
@@ -21,9 +23,16 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   )
 }

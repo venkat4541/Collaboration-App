@@ -26,6 +26,16 @@ export function FloatingChat({ dashboardId, userId, userName }: FloatingChatProp
   const [isMinimized, setIsMinimized] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
+  
+  // Refs to track current state for use in subscription callback
+  const isOpenRef = useRef(isOpen)
+  const isMinimizedRef = useRef(isMinimized)
+  
+  // Keep refs in sync with state
+  useEffect(() => {
+    isOpenRef.current = isOpen
+    isMinimizedRef.current = isMinimized
+  }, [isOpen, isMinimized])
 
   useEffect(() => {
     loadMessages()
@@ -37,8 +47,8 @@ export function FloatingChat({ dashboardId, userId, userName }: FloatingChatProp
       channel = await subscribeToChatMessages(dashboardId, (payload) => {
         if (payload.new) {
           loadMessages()
-          // Increment unread if chat is closed or minimized
-          if (!isOpen || isMinimized) {
+          // Increment unread if chat is closed or minimized (use refs for current value)
+          if (!isOpenRef.current || isMinimizedRef.current) {
             setUnreadCount(prev => prev + 1)
           }
         }
@@ -148,7 +158,7 @@ export function FloatingChat({ dashboardId, userId, userName }: FloatingChatProp
 
       {/* Floating Chat Window - Only show when open and not minimized */}
       {isOpen && !isMinimized && (
-        <Card className="fixed bottom-6 right-6 w-96 h-[500px] shadow-2xl z-50 flex flex-col overflow-hidden">
+        <Card className="py-0 fixed bottom-6 right-6 w-96 h-[500px] shadow-2xl z-50 flex flex-col overflow-hidden">
           <CardHeader className="p-2 border-b">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">Team Chat</CardTitle>

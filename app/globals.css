@@ -115,6 +115,20 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Color Theme Variants */
+.theme-red { --primary: oklch(0.637 0.237 25.331); --primary-foreground: oklch(0.985 0 0); }
+.theme-rose { --primary: oklch(0.632 0.247 12.422); --primary-foreground: oklch(0.985 0 0); }
+.theme-orange { --primary: oklch(0.705 0.213 50.594); --primary-foreground: oklch(0.145 0 0); }
+.theme-green { --primary: oklch(0.624 0.212 155.825); --primary-foreground: oklch(0.985 0 0); }
+.theme-blue { --primary: oklch(0.552 0.236 263.711); --primary-foreground: oklch(0.985 0 0); }
+.theme-yellow { --primary: oklch(0.836 0.179 95.277); --primary-foreground: oklch(0.145 0 0); }
+.theme-violet { --primary: oklch(0.569 0.246 293.756); --primary-foreground: oklch(0.985 0 0); }
+.theme-zinc { --primary: oklch(0.205 0 0); --primary-foreground: oklch(0.985 0 0); }
+.theme-slate { --primary: oklch(0.256 0.022 256.848); --primary-foreground: oklch(0.985 0 0); }
+.theme-stone { --primary: oklch(0.269 0.005 56.366); --primary-foreground: oklch(0.985 0 0); }
+.theme-gray { --primary: oklch(0.256 0 0); --primary-foreground: oklch(0.985 0 0); }
+.theme-neutral { --primary: oklch(0.269 0 0); --primary-foreground: oklch(0.985 0 0); }
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

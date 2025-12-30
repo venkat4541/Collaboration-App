@@ -38,7 +38,6 @@ export function CreateDashboardDialog({ open, onOpenChange, onSuccess }: CreateD
       const { dashboard, inviteCode, otp } = await createDashboard(name, user.id)
       setInviteInfo({ code: inviteCode, otp })
       toast.success('Dashboard created successfully!')
-      onSuccess?.()
     } catch (error: any) {
       toast.error(error.message || 'Failed to create dashboard')
     } finally {
@@ -47,6 +46,10 @@ export function CreateDashboardDialog({ open, onOpenChange, onSuccess }: CreateD
   }
 
   const handleClose = () => {
+    if (inviteInfo) {
+      // Only navigate if dashboard was created
+      onSuccess?.()
+    }
     setName('')
     setInviteInfo(null)
     setCopied(false)
