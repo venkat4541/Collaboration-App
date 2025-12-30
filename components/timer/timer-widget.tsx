@@ -42,6 +42,8 @@ export function TimerWidget({ widget, userId, dashboardMembers }: TimerWidgetPro
   const [teamNotes, setTeamNotes] = useState<any[]>([])
   const [showNotes, setShowNotes] = useState(false)
   const [savingNote, setSavingNote] = useState(false)
+  const [hasNotes, setHasNotes] = useState(false)
+  const [hasLeaderboardData, setHasLeaderboardData] = useState(false)
 
   useEffect(() => {
     loadTimerData()
@@ -64,6 +66,24 @@ export function TimerWidget({ widget, userId, dashboardMembers }: TimerWidgetPro
       }
     }
   }, [widget.id, userId])
+
+  // Check for notes and leaderboard data on mount
+  useEffect(() => {
+    const checkForData = async () => {
+      try {
+        // Check for any notes today
+        const notes = await getTeamNotes(widget.id)
+        setHasNotes(notes.length > 0)
+        
+        // Check for leaderboard data
+        const leaderboardData = await getLeaderboard(widget.id, 'day')
+        setHasLeaderboardData(leaderboardData.length > 0)
+      } catch (error) {
+        console.error('Failed to check for data:', error)
+      }
+    }
+    checkForData()
+  }, [widget.id])
 
   // Update display seconds when timer is running
   useEffect(() => {
@@ -248,26 +268,32 @@ export function TimerWidget({ widget, userId, dashboardMembers }: TimerWidgetPro
             <Button
               variant={showLeaderboard ? 'default' : 'ghost'}
               size="icon"
-              className="h-8 w-8"
+              className="h-8 w-8 relative"
               onClick={() => {
                 setShowLeaderboard(!showLeaderboard)
                 if (showNotes) setShowNotes(false)
               }}
               title="Leaderboard"
             >
-              <Trophy className="h-4 w-4" />
+              <Trophy className={`h-4 w-4 ${hasLeaderboardData && !showLeaderboard ? 'text-yellow-500' : ''}`} />
+              {hasLeaderboardData && !showLeaderboard && (
+                <span className="absolute top-1 right-1 h-2 w-2 bg-yellow-500 rounded-full" />
+              )}
             </Button>
             <Button
               variant={showNotes ? 'default' : 'ghost'}
               size="icon"
-              className="h-8 w-8"
+              className="h-8 w-8 relative"
               onClick={() => {
                 setShowNotes(!showNotes)
                 if (showLeaderboard) setShowLeaderboard(false)
               }}
               title="Daily Notes"
             >
-              <FileText className="h-4 w-4" />
+              <FileText className={`h-4 w-4 ${hasNotes && !showNotes ? 'text-blue-500' : ''}`} />
+              {hasNotes && !showNotes && (
+                <span className="absolute top-1 right-1 h-2 w-2 bg-blue-500 rounded-full" />
+              )}
             </Button>
           </div>
         </div>
